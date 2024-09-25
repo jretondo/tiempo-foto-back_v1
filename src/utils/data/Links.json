@@ -1,0 +1,18 @@
+[
+  {
+    "hostShort": "contanet.com.ar",
+    "longShort": "https://nekonet.com.ar",
+    "logoHead": "https://nekonet.com.ar/logosClientes/clubLimp/logo.png",
+    "host": "https://nekonet.com.ar",
+    "instagramLink": "https://instagram.com",
+    "facebookLink": "https://facebook.com",
+    "twitterLink": "https://twitter.com",
+    "linkImgIg": "http://nekonet.com.ar/logosClientes/contanet/instagram1.png",
+    "linkImgFb": "http://nekonet.com.ar/logosClientes/contanet/facebook1.png",
+    "linkImgTw": "http://nekonet.com.ar/logosClientes/contanet/twitter1.png",
+    "linkApp": "https://clublimp.nekoadmin.com.ar/",
+    "instagram": false,
+    "facebook": false,
+    "twitter": false
+  }
+]

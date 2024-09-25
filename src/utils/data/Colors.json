@@ -1,0 +1,19 @@
+[
+  {
+    "success": "#2dce89",
+    "info": "#11cdef",
+    "warning": "#fb6340",
+    "danger": "#f5365c",
+    "ligth": "#adb5bd",
+    "dark": "#212529",
+    "primary": "#0081c9",
+    "secondary": "#0081c9",
+    "paragraph": "#0a0a0a",
+    "fontBg": "#fff",
+    "tittle": "#7cc142",
+    "backgroundCont": "#fff",
+    "background": "#fff",
+    "ligthBg": "#c3b4e8",
+    "textBg": "#fff"
+  }
+]

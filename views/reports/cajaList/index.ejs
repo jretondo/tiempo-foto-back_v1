@@ -1,0 +1,108 @@
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+    <%- style %>
+
+        <header class="header">
+            <div class="logo">
+                <img src="<%- logo %> " alt="logo">
+            </div>
+            <div class="summary">
+                LISTADO DE CAJA
+            </div>
+        </header>
+        <div class="resumen">
+            <div class="user-data">
+                <div class="pv">
+                    <div class="data">
+                        <span>
+                            <font style="font-weight: bold;">Punto de Venta:</font>
+                            <%- ptoVtaStr %>
+                        </span>
+                    </div>
+                </div>
+                <div class="data">
+                    <div class="user">
+                        <span>
+                            <font style="font-weight: bold;">Usuario:</font>
+                            <%- usuarioStr %>
+                        </span>
+                    </div>
+                    <div class="date">
+                        <span>
+                            <font style="font-weight: bold;">Desde:</font>
+                            <%- desdeStr %>
+                        </span>
+                    </div>
+                    <div class="date">
+                        <span>
+                            <font style="font-weight: bold;">Hasta:</font>
+                            <%- hastaStr %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="totales">
+                <div class="listado">
+                    <% totaleslista.forEach(function(item){ %>
+                        <div class="totalItem">
+                            <div class="title">
+                                <span>Total <%- item.tipoStr %> : </span>
+                            </div>
+                            <div class="import">
+                                <span>$ <%- item.totalStr %> </span>
+                            </div>
+                        </div>
+                        <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+            <div class="tasks">
+                <table class="tasks-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Factura</th>
+                            <th>Forma de pago</th>
+                            <th>Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% listaVtas.forEach(function(item){ %>
+                            <tr>
+                                <td>
+                                    <%- item.fecha %>
+                                </td>
+                                <td>
+                                    <%- item.cliente %>
+                                </td>
+                                <td style="text-align: center;">
+                                    <%- item.factura %>
+                                </td>
+                                <td>
+                                    <%- item.formaPago %>
+                                </td>
+                                <td style="text-align: right;padding-right: 10px;">$ <%- item.totalStr %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+</body>
+
+</html>

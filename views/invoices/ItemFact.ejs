@@ -1,0 +1,25 @@
+<tr>
+  <td class="no">
+    <%- itemCant %>
+      <% if(tipoUn===0){ %>
+        Un.
+        <% }else if(tipoUn===1){ %>
+          Kg.
+          <% }else if(tipoUn===2){ %>
+            Lts.
+            <% } %>
+  </td>
+  <td class="desc">
+    <h3>
+      <%- itemName %>
+    </h3>
+  </td>
+  <td class="unit">
+    <%- itemIva %>
+  </td>
+  <td class="qty">$<%- itemPrice %>
+  </td>
+
+  <td class="total">$<%- itemTotal %>
+  </td>
+</tr>

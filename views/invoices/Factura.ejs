@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Factura</title>
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+
+  <%- myCss %>
+
+    <header class="clearfix">
+      <div id="logo">
+        <img src="<%- logo %> ">
+        <h2 class="name">
+          <%- razSocOrigen %>
+        </h2>
+        <div>
+          <%- direccionOrigen %>
+        </div>
+        <div style="font-weight: bold">
+          <%- condIvaOrigen %>
+        </div>
+        <div><a href="mailto:<%- emailOrigen %> ">
+            <%- emailOrigen %>
+          </a></div>
+      </div>
+      <div style="position: absolute;text-align: center;width: 100%;">
+        <h2 class="name" style="font-weight: bold;">ORIGINAL</h2>
+        <div
+          style="width: 80px;height: 80px;background: #80808061;margin: auto;border: 4px solid black;margin-top: 20px;">
+          <h1 style="margin-top: 5px;margin-bottom: 5px;font-size: 35px;">
+            <%- letra %>
+          </h1>
+          <span>COD. <%- codFact %></span>
+        </div>
+      </div>
+      <div id="company" style="margin-top: 21px;text-align: left;">
+        <h2 class="name" style="margin-bottom: 10px;">FACTURA Nº: <span style="font-weight: bold;">
+            <%- factNro %>
+          </span></h2>
+        <h2 class="name" style="margin-bottom: 10px;">FECHA: <span style="font-weight: bold;">
+            <%- fechaFact %>
+          </span></h2>
+        <div style="margin-bottom: 7px;">CUIT: <span style="font-weight: bold;">
+            <%- cuitOrigen %>
+          </span></div>
+        <div style="margin-bottom: 7px;">IIBB: <span style="font-weight: bold;">
+            <%- iibbOrigen %>
+          </span></div>
+        <div style="margin-bottom: 7px;">Inicio de act.: <span style="font-weight: bold;">
+            <%- iniAct %>
+          </span></div>
+      </div>
+      </div>
+    </header>
+    <main>
+
+      <div id="details" class="clearfix">
+        <% if(clienteNro===0){ %>
+          <div id="client">
+            <div class="to">Consumidor Final:</div>
+            <div class="email"><a href="mailto:<%- clienteEmail %> ">
+                <%- clienteEmail %>
+              </a></div>
+          </div>
+          <% }else { %>
+            <div id="client">
+              <div class="to">CLIENTE:</div>
+              <h2 class="name">
+                <%- clienteName %>
+              </h2>
+              <h2 class="name">
+                <%- condIvaCliente %>
+              </h2>
+              <h2 class="name">
+                <%- tipoDoc %> : <%- clienteNro %>
+              </h2>
+              <div class="email"><a href="mailto:<%- clienteEmail %> ">
+                  <%- clienteEmail %>
+                </a></div>
+            </div>
+            <% } %>
+              <div id="invoice">
+                <% if(cbteAsoc){ %>
+                  <br />
+                  <div class="to">COMPROBANTE ASOCIADO:</div>
+                  <h2 class="name">FACTURA Nº: </h2>
+                  <h2 class="name">
+                    <%- cbteAsoc %>
+                  </h2>
+                  <% }else{ %>
+                    <% if(parseInt(formaPago.code)===5){ %>
+                      <div class="to">Forma de Pago:</div>
+                      <% variosPagos.forEach(function(item){ %>
+                        <h2 class="name">
+                          <%- item.tipo_txt %>: $ <%- item.importe %>
+                        </h2>
+                        <% }); %>
+                          <% }else{ %>
+                            <div class="to">Forma de Pago:</div>
+                            <h2 class="name">
+                              <%- formaPago.string %>
+                            </h2>
+                            <% } %>
+                              <% } %>
+              </div>
+      </div>
+
+      <table border="0" cellspacing="0" cellpadding="0">
+        <thead>
+          <tr>
+            <th class="no">CANT.</th>
+            <th class="desc">DESCRIPCION</th>
+            <th class="unit">% IVA</th>
+            <th class="qty">$ UN. C/IVA</th>
+            <th class="total">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% listaItems.forEach(function(item){ %>
+            <%- include('./ItemFact.ejs', {itemIva: item.alicuota_id, itemName: item.nombre_prod, itemPrice:
+              item.precio_ind, itemCant: item.cant_prod, itemTotal: item.total_prod, tipoUn: item.unidad_tipo_prod}); %>
+              <% }); %>
+        </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
+    </main>
+    <footer>
+      <table border="0" cellspacing="0" cellpadding="0">
+        <thead>
+          <tr>
+            <th style="border: 1px solid white;" class="total">SUB-TOTAL: $<%- subTotal %>
+            </th>
+            <th style="border: 1px solid white;" class="total">IVA: $<%- totalIva %>
+            </th>
+            <th style="border: 1px solid white;" class="total">
+              DESC.: $<%- totalDesc %>
+            </th>
+            <th style="border: 1px solid white;" class="total" style="font-size: 1.2em;font-weight: bold;">TOTAL: $<%-
+                totalFact %>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <div style="width: 100%;border-top: 2px solid #aaaaaa;margin-top: 10px;margin-bottom: 10px;"></div>
+
+      <div style="width: 65%">
+        <div style="position: absolute;left: 0%;">
+          <img src="<%- codQR %>" width="100px">
+        </div>
+        <div style="position: absolute;left: 100px;">
+          <img src="<%- logoAfip1 %>" style="width: 75%;">
+          <br>
+          <img src="<%- logoAfip2 %>" style="width: 75%;">
+        </div>
+      </div>
+      <div style="width: 27%;position: absolute;right: 0;text-align: left;">
+        <h3 style="margin-top: 5px; margin-bottom: 5px;">CAE Nº: <%- caeNro %>
+        </h3>
+        <h3 style="margin-top: 5px;margin-bottom: 5px">VTO. CAE: <%- caeVto %>
+        </h3>
+        <div>
+          <h3 style="margin-top: 5px;margin-bottom: 5px">
+            Vendedor:
+          </h3>
+          <h3 style="margin-top: 5px;margin-bottom: 5px">
+            <%- vendedor %>
+          </h3>
+        </div>
+      </div>
+      </div>
+    </footer>
+</body>
+
+</html>
