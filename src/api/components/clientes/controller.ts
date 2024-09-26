@@ -1,4 +1,4 @@
-import { INewInsert } from './../../../interfaces/Ifunctions';
+import { IJoin, INewInsert } from './../../../interfaces/Ifunctions';
 import { IFactura, IMovCtaCte } from './../../../interfaces/Itables';
 import { AfipClass } from './../../../utils/facturacion/AfipClass';
 import { Ipages, IWhereParams } from 'interfaces/Ifunctions';
@@ -7,6 +7,7 @@ import {
   EConcatWhere,
   EModeWhere,
   ESelectFunct,
+  ETypesJoin,
 } from '../../../enums/EfunctMysql';
 import { Tables, Columns } from '../../../enums/EtablesDB';
 import StoreType from '../../../store/mysql';
@@ -25,29 +26,60 @@ export = (injectedStore: typeof StoreType) => {
         mode: EModeWhere.like,
         concat: EConcatWhere.or,
         items: [
-          { column: Columns.clientes.telefono, object: String(item) },
-          { column: Columns.clientes.email, object: String(item) },
-          { column: Columns.clientes.ndoc, object: String(item) },
-          { column: Columns.clientes.razsoc, object: String(item) },
+          {
+            column: `${Tables.CLIENTES}.${Columns.clientes.telefono}`,
+            object: String(item),
+          },
+          {
+            column: `${Tables.CLIENTES}.${Columns.clientes.email}`,
+            object: String(item),
+          },
+          {
+            column: `${Tables.CLIENTES}.${Columns.clientes.ndoc}`,
+            object: String(item),
+          },
+          {
+            column: `${Tables.CLIENTES}.${Columns.clientes.razsoc}`,
+            object: String(item),
+          },
         ],
       };
       filters.push(filter);
     }
+
+    const joinQuery: IJoin = {
+      table: Tables.ADMIN,
+      colJoin: Columns.admin.id,
+      colOrigin: Columns.clientes.user_id,
+      type: ETypesJoin.left,
+    };
 
     let pages: Ipages;
     if (page) {
       pages = {
         currentPage: page,
         cantPerPage: cantPerPage || 10,
-        order: Columns.clientes.id,
+        order: `${Tables.CLIENTES}.${Columns.clientes.id}`,
         asc: true,
       };
       const data = await store.list(
         Tables.CLIENTES,
-        [ESelectFunct.all],
+        [
+          `${Tables.CLIENTES}.${Columns.clientes.id} as id`,
+          `${Tables.CLIENTES}.${Columns.clientes.razsoc} as razsoc`,
+          `${Tables.CLIENTES}.${Columns.clientes.ndoc} as ndoc`,
+          `${Tables.CLIENTES}.${Columns.clientes.cuit} as cuit`,
+          `${Tables.CLIENTES}.${Columns.clientes.telefono} as telefono`,
+          `${Tables.CLIENTES}.${Columns.clientes.email} as email`,
+          `${Tables.CLIENTES}.${Columns.clientes.cond_iva} as cond_iva`,
+          `${Tables.CLIENTES}.${Columns.clientes.user_id} as user_id`,
+          `${Tables.ADMIN}.${Columns.admin.nombre} as vendedor_nombre`,
+          `${Tables.ADMIN}.${Columns.admin.apellido} as vendedor_apellido`,
+        ],
         filters,
         undefined,
         pages,
+        joinQuery,
       );
       const cant = await store.list(
         Tables.CLIENTES,
@@ -55,6 +87,7 @@ export = (injectedStore: typeof StoreType) => {
         filters,
         undefined,
         undefined,
+        joinQuery,
       );
       const pagesObj = await getPages(cant[0].COUNT, 10, Number(page));
       return {
@@ -64,10 +97,22 @@ export = (injectedStore: typeof StoreType) => {
     } else {
       const data = await store.list(
         Tables.CLIENTES,
-        [ESelectFunct.all],
+        [
+          `${Tables.CLIENTES}.${Columns.clientes.id} as id`,
+          `${Tables.CLIENTES}.${Columns.clientes.razsoc} as razsoc`,
+          `${Tables.CLIENTES}.${Columns.clientes.ndoc} as ndoc`,
+          `${Tables.CLIENTES}.${Columns.clientes.cuit} as cuit`,
+          `${Tables.CLIENTES}.${Columns.clientes.telefono} as telefono`,
+          `${Tables.CLIENTES}.${Columns.clientes.email} as email`,
+          `${Tables.CLIENTES}.${Columns.clientes.cond_iva} as cond_iva`,
+          `${Tables.CLIENTES}.${Columns.clientes.user_id} as user_id`,
+          `${Tables.ADMIN}.${Columns.admin.nombre} as vendedor_nombre`,
+          `${Tables.ADMIN}.${Columns.admin.apellido} as vendedor_apellido`,
+        ],
         filters,
         undefined,
         undefined,
+        joinQuery,
       );
       return {
         data,
@@ -83,6 +128,7 @@ export = (injectedStore: typeof StoreType) => {
       telefono: body.telefono,
       email: body.email,
       cond_iva: body.cond_iva,
+      user_id: body.user_id,
     };
 
     try {

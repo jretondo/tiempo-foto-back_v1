@@ -1,7 +1,6 @@
 import { Iorder } from './../../../interfaces/Ifunctions';
 import { ETypesJoin } from '../../../enums/EfunctMysql';
 import { MetodosPago } from './../../../enums/EtablesDB';
-import { sendAvisoFact } from './../../../utils/sendEmails/sendAvisoFact';
 import { IFormasPago, IMovCtaCte } from './../../../interfaces/Itables';
 import { createListSellsPDF } from './../../../utils/facturacion/lists/createListSellsPDF';
 import {
@@ -22,7 +21,6 @@ import ControllerClientes from '../clientes';
 import fs from 'fs';
 import { NextFunction } from 'express';
 import controller from '../clientes';
-import { zfill } from '../../../utils/cerosIzq';
 import { sendCode } from '../../../utils/sendEmails/sendCode';
 import moment from 'moment';
 
@@ -362,11 +360,15 @@ export = (injectedStore: typeof StoreType) => {
         headers: headers,
         rows: await rows,
       });
+      const devolucion: boolean = newDetFact.some(
+        (item) => item.total_prod < 0,
+      );
       const resultInsertStock = await ControllerStock.multipleInsertStock(
         newDetFact,
         newFact.user_id,
         pvId,
         factId,
+        devolucion,
       );
       return {
         status: 200,
@@ -396,11 +398,10 @@ export = (injectedStore: typeof StoreType) => {
       let keyDir = 'drop.key';
       let entornoAlt = false;
       if (process.env.ENTORNO === 'PROD') {
-        certDir = pvData[0].cert_file || 'drop_test.crt';
-        keyDir = pvData[0].key_file || 'drop.key';
-        entornoAlt = true;
       }
-
+      certDir = pvData[0].cert_file || 'drop_test.crt';
+      keyDir = pvData[0].key_file || 'drop.key';
+      entornoAlt = true;
       const afip = new AfipClass(pvData[0].cuit, certDir, keyDir, entornoAlt);
       const lastfact = await afip.lastFact(pvData[0].pv, tipo);
       if (lastfact.status === 200) {
@@ -448,6 +449,62 @@ export = (injectedStore: typeof StoreType) => {
         };
       }
     }
+  };
+
+  const cajaListDetails = async (
+    filtersQuery: {
+      userId?: number;
+      ptoVta?: number;
+      desde: string;
+      hasta: string;
+      group?: number;
+      proveedor?: string;
+      marca?: string;
+      prodId?: number;
+      cantPerPage?: number;
+    },
+    page: number = 1,
+  ): Promise<any> => {
+    const {
+      userId,
+      ptoVta,
+      desde,
+      hasta,
+      group,
+      prodId,
+      proveedor,
+      marca,
+      cantPerPage = 10,
+    } = filtersQuery;
+    const offset = (page - 1) * cantPerPage;
+    const data = await store
+      .rawQuery(
+        `CALL GetFacturasDetailsGrouped('${desde}', '${hasta}', ${
+          proveedor ? `'${proveedor}'` : 'null'
+        }, ${marca ? `'${marca}'` : 'null'}, ${
+          userId ? `'${userId}'` : 'null'
+        }, ${ptoVta ? `'${ptoVta}'` : 'null'}, ${
+          prodId ? `'${prodId}'` : 'null'
+        }, ${group ? `'${group}'` : 'null'}, ${offset}, ${cantPerPage});`,
+      )
+      .then((data) => data[1]);
+    const count = await store
+      .rawQuery(
+        `CALL GetFacturasDetailsGroupedCount('${desde}', '${hasta}', ${
+          proveedor ? `'${proveedor}'` : 'null'
+        }, ${marca ? `'${marca}'` : 'null'}, ${
+          userId ? `'${userId}'` : 'null'
+        }, ${ptoVta ? `'${ptoVta}'` : 'null'}, ${
+          prodId ? `'${prodId}'` : 'null'
+        }, ${group ? `'${group}'` : 'null'});`,
+      )
+      .then((data) => data[1].length);
+
+    const pagesObj = await getPages(count, cantPerPage, Number(page));
+    return {
+      data,
+      pagesObj,
+    };
   };
 
   const getFiscalDataInvoice = async (
@@ -528,6 +585,7 @@ export = (injectedStore: typeof StoreType) => {
           telefono: '',
           email: newFact.email_cliente,
           cond_iva: newFact.cond_iva_cliente,
+          user_id: userData.id || 0,
         };
         try {
           await ControllerClientes.upsert(newClient, next);
@@ -805,6 +863,7 @@ export = (injectedStore: typeof StoreType) => {
     dummyServers,
     correctorNC,
     newMovCtaCte,
+    cajaListDetails,
     getFormasPago,
     getDetFact,
     codigoVerificacionDescuento,

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  club-limpieza-app-dev:
+  tiempo-foto-app-dev:
     image: node-point-sell-dev:1.0
     working_dir: /app
     volumes:
@@ -9,6 +9,6 @@ services:
       - /app/node_modules
       - ./public:/app/public
     ports:
-      - '3007:3007'
+      - '3014:3014'
     env_file:
       - .env

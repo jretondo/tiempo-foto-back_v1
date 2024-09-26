@@ -140,6 +140,7 @@ export = (injectedStore: typeof StoreType) => {
     userId: number,
     pvId: number,
     factId: number,
+    devolucion: boolean,
   ) => {
     const headers: Array<string> = [
       Columns.stock.fecha,
@@ -173,10 +174,10 @@ export = (injectedStore: typeof StoreType) => {
         values.push(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
         values.push(item.id_prod);
         values.push(pvId);
-        values.push(-item.cant_prod);
+        values.push(devolucion ? item.cant_prod : -item.cant_prod);
         values.push(1);
-        values.push('Venta Stock');
-        values.push(0);
+        values.push(devolucion ? 'Devolución' : 'Venta Stock');
+        values.push(prodData[0].precio_compra * item.cant_prod);
         values.push(item.alicuota_id);
         values.push(userId);
         values.push(factId);

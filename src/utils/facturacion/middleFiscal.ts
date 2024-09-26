@@ -24,6 +24,7 @@ export const fiscalMiddle = () => {
         | FactMonotribServ
         | FactMonotribServNC
         | any = req.body.dataFiscal;
+      console.log('dataFiscal :>> ', dataFiscal);
       if (dataFiscal.CbtesAsoc) {
         asociado = dataFiscal.CbtesAsoc;
         try {
@@ -48,11 +49,11 @@ export const fiscalMiddle = () => {
         let entornoAlt = false;
 
         if (process.env.ENTORNO === 'PROD') {
-          certDir = pvData.cert_file || 'drop_test.crt';
-          keyDir = pvData.key_file || 'drop.key';
-          entornoAlt = true;
         }
-        console.log('newFact.cuit_origen :>> ', newFact.cuit_origen);
+
+        certDir = pvData.cert_file || 'drop_test.crt';
+        keyDir = pvData.key_file || 'drop.key';
+        entornoAlt = true;
         const afip = new AfipClass(
           newFact.cuit_origen,
           certDir,

@@ -91,6 +91,15 @@ const mInsert = async (table: Tables, data: IMultipleInsert): Promise<any> => {
   });
 };
 
+const rawQuery = async (query: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    connection.query(query, (err: Error, res: any) => {
+      if (err) return reject(err);
+      resolve(res || null);
+    });
+  });
+};
+
 const update = async (
   table: Tables,
   data: object,
@@ -247,4 +256,5 @@ export = {
   list,
   updateWhere,
   getAnyCol,
+  rawQuery,
 };
