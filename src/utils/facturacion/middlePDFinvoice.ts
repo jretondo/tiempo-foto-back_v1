@@ -210,6 +210,7 @@ export const invoicePDFMiddle = () => {
           newFact.total_fact < 0 ? -newFact.total_fact : newFact.total_fact,
         ),
         totalDesc: formatMoney(newFact.descuento),
+        totalRecargo: formatMoney(newFact.recargo || 0),
       };
       let formapagoStr = '';
       switch (newFact.forma_pago) {
@@ -228,6 +229,12 @@ export const invoicePDFMiddle = () => {
         case 4:
           formapagoStr = 'CUENTA CORRIENTE';
           break;
+        case 6:
+          formapagoStr = 'CHEQUE';
+          break;
+        case 7:
+          formapagoStr = 'TRANSFERENCIA';
+          break;
         default:
           formapagoStr = 'OTROS';
           break;
@@ -245,6 +252,8 @@ export const invoicePDFMiddle = () => {
         cbteAsoc,
         formaPago,
         variosPagos,
+        customDetBool: newFact.custom_bool,
+        detalle: newFact.det_rbo,
         ...encabezado,
         ...ptoVta,
         ...cliente,

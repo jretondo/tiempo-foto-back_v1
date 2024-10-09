@@ -105,6 +105,8 @@ export interface IFactura {
   id_fact_asoc: number;
   descuento: number;
   det_rbo?: string;
+  recargo?: number;
+  custom_bool?: boolean;
 }
 
 export interface IDetFactura {

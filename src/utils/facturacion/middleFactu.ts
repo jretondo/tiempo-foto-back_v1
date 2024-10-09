@@ -25,14 +25,28 @@ const factuMiddel = () => {
     try {
       req.body.timer = Number(new Date());
       const body: any = req.body.dataFact;
+      const productSell: boolean = req.body.productSell;
+      const detCustom: string = req.body.detCustom;
+      const totalCustom: number = req.body.totalCustom;
       const user: IUser = req.body.user;
       const pvId = body.pv_id;
       const pvData: Array<INewPV> = await ptosVtaController.get(pvId);
-      const productsList: IfactCalc = await calcProdLista(body.lista_prod);
+      const productsList: IfactCalc = productSell
+        ? await calcProdLista(body.lista_prod)
+        : {
+            listaProd: [],
+            totalFact: 0,
+            totalIva: 0,
+            totalNeto: 0,
+            totalCosto: 0,
+          };
       const fiscalBool = req.body.fiscal;
       const variosPagos = body.variosPagos;
       if (parseInt(fiscalBool) === 0) {
         body.fiscal = false;
+      }
+      if (!body.recargo) {
+        body.recargo = 0;
       }
       let cliente = {
         cliente_tdoc: 99,
@@ -92,6 +106,19 @@ const factuMiddel = () => {
           productsList.totalNeto - productsList.totalNeto * (descuento / 100);
       }
 
+      if (body.recargo > 0) {
+        productsList.totalFact =
+          Number(productsList.totalFact) + parseFloat(body.recargo);
+      }
+
+      if (!productSell) {
+        if (totalCustom > 0) {
+          productsList.totalFact = totalCustom;
+          productsList.totalNeto = totalCustom;
+          productsList.totalIva = 0;
+        }
+      }
+
       const newFact: IFactura = {
         fecha: body.fecha,
         pv: pvData[0].pv,
@@ -128,6 +155,9 @@ const factuMiddel = () => {
         pv_id: body.pv_id,
         id_fact_asoc: 0,
         descuento: descuentoNumber,
+        recargo: body.recargo,
+        det_rbo: detCustom,
+        custom_bool: !productSell,
       };
 
       let ivaList: Array<IIvaItem> = [];

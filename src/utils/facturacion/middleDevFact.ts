@@ -79,6 +79,7 @@ const devFactMiddle = () => {
       pv_id: dataFact[0].pv_id,
       id_fact_asoc: dataFact[0].id || 0,
       descuento: dataFact[0].descuento,
+      recargo: -(dataFact[0].recargo || 0),
     };
     let newDet: Array<IDetFactura> = [];
 

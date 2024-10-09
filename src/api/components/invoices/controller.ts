@@ -326,50 +326,57 @@ export = (injectedStore: typeof StoreType) => {
         Columns.detallesFact.alicuota_id,
         Columns.detallesFact.precio_ind,
       ];
-      const rows: Promise<Array<Array<any>>> = new Promise(
-        (resolve, reject) => {
-          const rowsvalues: Array<Array<any>> = [];
-          newDetFact.map(async (item, key) => {
-            const values = [];
-            values.push(factId);
-            values.push(item.id_prod);
-            values.push(item.nombre_prod);
-            values.push(item.cant_prod);
-            values.push(item.unidad_tipo_prod);
-            values.push(item.total_prod);
-            values.push(item.total_iva);
-            values.push(item.total_costo);
-            values.push(item.total_neto);
-            values.push(item.alicuota_id);
-            values.push(item.precio_ind);
-            rowsvalues.push(values);
-            if (item.total_prod < 0) {
-              await store.update(
-                Tables.DET_FACTURAS,
-                { anulada: true },
-                item.id || 0,
-              );
-            }
-            if (key === newDetFact.length - 1) {
-              resolve(rowsvalues);
-            }
-          });
-        },
-      );
-      const resultinsert = await store.mInsert(Tables.DET_FACTURAS, {
-        headers: headers,
-        rows: await rows,
-      });
+      const rows: Promise<Array<Array<any>>> | undefined =
+        newDetFact.length > 0
+          ? new Promise((resolve, reject) => {
+              const rowsvalues: Array<Array<any>> = [];
+              newDetFact.map(async (item, key) => {
+                const values = [];
+                values.push(factId);
+                values.push(item.id_prod);
+                values.push(item.nombre_prod);
+                values.push(item.cant_prod);
+                values.push(item.unidad_tipo_prod);
+                values.push(item.total_prod);
+                values.push(item.total_iva);
+                values.push(item.total_costo);
+                values.push(item.total_neto);
+                values.push(item.alicuota_id);
+                values.push(item.precio_ind);
+                rowsvalues.push(values);
+                if (item.total_prod < 0) {
+                  await store.update(
+                    Tables.DET_FACTURAS,
+                    { anulada: true },
+                    item.id || 0,
+                  );
+                }
+                if (key === newDetFact.length - 1) {
+                  resolve(rowsvalues);
+                }
+              });
+            })
+          : undefined;
+      const resultinsert =
+        newDetFact.length > 0
+          ? await store.mInsert(Tables.DET_FACTURAS, {
+              headers: headers,
+              rows: (await rows) || [],
+            })
+          : { affectedRows: 0 };
       const devolucion: boolean = newDetFact.some(
         (item) => item.total_prod < 0,
       );
-      const resultInsertStock = await ControllerStock.multipleInsertStock(
-        newDetFact,
-        newFact.user_id,
-        pvId,
-        factId,
-        devolucion,
-      );
+      const resultInsertStock =
+        newDetFact.length > 0
+          ? await ControllerStock.multipleInsertStock(
+              newDetFact,
+              newFact.user_id,
+              pvId,
+              factId,
+              devolucion,
+            )
+          : { affectedRows: 0 };
       return {
         status: 200,
         msg: {

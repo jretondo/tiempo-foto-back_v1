@@ -150,6 +150,7 @@ enum Facturas {
   id_fact_asoc = 'id_fact_asoc',
   create_time = 'create_time',
   det_rbo = 'det_rbo',
+  recargo = 'recargo',
 }
 
 enum DetalleFact {
@@ -201,6 +202,8 @@ export enum MetodosPago {
   credito = 3,
   ctaCte = 4,
   varios = 5,
+  cheque = 6,
+  transferencia = 7,
 }
 
 export enum Tables {
