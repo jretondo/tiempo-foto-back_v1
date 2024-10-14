@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { INewPV } from 'interfaces/Irequests';
 import { IFactura } from 'interfaces/Itables';
-import moment from 'moment';
 import fs from 'fs';
 import path from 'path';
 import ejs from 'ejs';
@@ -9,6 +8,7 @@ import { zfill } from '../cerosIzq';
 import { condFiscalIva } from './AfipClass';
 import { formatMoney } from '../formatMoney';
 import puppeteer from 'puppeteer';
+import moment from 'moment';
 
 export const paymentPDFMiddle = () => {
   const middleware = async (
@@ -153,6 +153,7 @@ export const paymentPDFMiddle = () => {
         ...totales,
         ...formaPago,
         ...footer,
+        totalRecargo: 0,
       };
 
       const ejsPath = 'Recibo.ejs';
