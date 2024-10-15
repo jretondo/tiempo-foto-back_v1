@@ -226,47 +226,82 @@ const calcProdLista = (
       totalCosto: 0,
     };
     productsList.map(async (prod, key) => {
-      let dataProd: Array<INewProduct> = [];
-      if (prod.id_prod === idAnt) {
-        dataProd = dataAnt;
+      const idProd = prod.id_prod;
+      if (idProd) {
+        let dataProd: Array<INewProduct> = [];
+        if (prod.id_prod === idAnt) {
+          dataProd = dataAnt;
+        } else {
+          dataProd = await (
+            await prodController.getPrincipal(prod.id_prod)
+          ).productGral;
+        }
+        idAnt = prod.id_prod;
+        dataAnt = dataProd;
+
+        const totalCosto = dataProd[0].precio_compra * prod.cant_prod;
+        const totalProd = dataProd[0].vta_price * prod.cant_prod;
+        const totalNeto = totalProd / (1 + dataProd[0].iva / 100);
+        const totalIva = totalNeto * (dataProd[0].iva / 100);
+
+        const newProdFact: IDetFactura = {
+          nombre_prod: dataProd[0].name,
+          cant_prod: prod.cant_prod,
+          unidad_tipo_prod: dataProd[0].unidad,
+          id_prod: prod.id_prod,
+          total_prod: roundNumber(totalProd),
+          total_iva: totalIva,
+          alicuota_id: dataProd[0].iva,
+          total_costo: roundNumber(totalCosto),
+          total_neto: totalNeto,
+          precio_ind: dataProd[0].vta_price,
+        };
+
+        factura.listaProd.push(newProdFact);
+        factura.totalFact =
+          Math.round((factura.totalFact + totalProd) * 100) / 100;
+        factura.totalIva = factura.totalIva + totalIva;
+        factura.totalNeto = factura.totalNeto + totalNeto;
+        factura.totalCosto =
+          Math.round((factura.totalCosto + totalCosto) * 100) / 100;
+
+        if (key === productsList.length - 1) {
+          factura.totalIva = Math.round(factura.totalIva * 100) / 100;
+          factura.totalNeto = Math.round(factura.totalNeto * 100) / 100;
+          resolve(factura);
+        }
       } else {
-        dataProd = await (
-          await prodController.getPrincipal(prod.id_prod)
-        ).productGral;
-      }
-      idAnt = prod.id_prod;
-      dataAnt = dataProd;
+        const totalCosto = 0;
+        const totalProd = Number(prod.vta_price) * prod.cant_prod;
+        const totalNeto = totalProd / (1 + 0 / 100);
+        const totalIva = totalNeto * (0 / 100);
 
-      const totalCosto = dataProd[0].precio_compra * prod.cant_prod;
-      const totalProd = dataProd[0].vta_price * prod.cant_prod;
-      const totalNeto = totalProd / (1 + dataProd[0].iva / 100);
-      const totalIva = totalNeto * (dataProd[0].iva / 100);
+        const newProdFact: IDetFactura = {
+          nombre_prod: String(prod.name),
+          cant_prod: prod.cant_prod,
+          unidad_tipo_prod: 0,
+          id_prod: prod.id_prod,
+          total_prod: roundNumber(totalProd),
+          total_iva: totalIva,
+          alicuota_id: 0,
+          total_costo: roundNumber(totalCosto),
+          total_neto: totalNeto,
+          precio_ind: Number(prod.vta_price),
+        };
 
-      const newProdFact: IDetFactura = {
-        nombre_prod: dataProd[0].name,
-        cant_prod: prod.cant_prod,
-        unidad_tipo_prod: dataProd[0].unidad,
-        id_prod: prod.id_prod,
-        total_prod: roundNumber(totalProd),
-        total_iva: totalIva,
-        alicuota_id: dataProd[0].iva,
-        total_costo: roundNumber(totalCosto),
-        total_neto: totalNeto,
-        precio_ind: dataProd[0].vta_price,
-      };
+        factura.listaProd.push(newProdFact);
+        factura.totalFact =
+          Math.round((factura.totalFact + totalProd) * 100) / 100;
+        factura.totalIva = factura.totalIva + totalIva;
+        factura.totalNeto = factura.totalNeto + totalNeto;
+        factura.totalCosto =
+          Math.round((factura.totalCosto + totalCosto) * 100) / 100;
 
-      factura.listaProd.push(newProdFact);
-      factura.totalFact =
-        Math.round((factura.totalFact + totalProd) * 100) / 100;
-      factura.totalIva = factura.totalIva + totalIva;
-      factura.totalNeto = factura.totalNeto + totalNeto;
-      factura.totalCosto =
-        Math.round((factura.totalCosto + totalCosto) * 100) / 100;
-
-      if (key === productsList.length - 1) {
-        factura.totalIva = Math.round(factura.totalIva * 100) / 100;
-        factura.totalNeto = Math.round(factura.totalNeto * 100) / 100;
-        resolve(factura);
+        if (key === productsList.length - 1) {
+          factura.totalIva = Math.round(factura.totalIva * 100) / 100;
+          factura.totalNeto = Math.round(factura.totalNeto * 100) / 100;
+          resolve(factura);
+        }
       }
     });
   });

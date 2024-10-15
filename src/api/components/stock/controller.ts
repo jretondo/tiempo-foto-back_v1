@@ -162,30 +162,32 @@ export = (injectedStore: typeof StoreType) => {
     const rows: Promise<Array<Array<any>>> = new Promise((resolve, reject) => {
       const rowsvalues: Array<Array<any>> = [];
       prodList.map(async (item, key) => {
-        const prodData: Array<INewProduct> = await store.get(
-          Tables.PRODUCTS_PRINCIPAL,
-          item.id_prod,
-        );
-        const pvData: Array<INewPV> = await store.get(
-          Tables.PUNTOS_VENTA,
-          pvId,
-        );
-        const values = [];
-        values.push(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
-        values.push(item.id_prod);
-        values.push(pvId);
-        values.push(devolucion ? item.cant_prod : -item.cant_prod);
-        values.push(1);
-        values.push(devolucion ? 'Devolución' : 'Venta Stock');
-        values.push(prodData[0].precio_compra * item.cant_prod);
-        values.push(item.alicuota_id);
-        values.push(userId);
-        values.push(factId);
-        values.push(prodData[0].name);
-        values.push(`${pvData[0].direccion} (PV: ${pvData[0].pv})`);
-        values.push(prodData[0].category);
-        values.push(prodData[0].subcategory);
-        rowsvalues.push(values);
+        if (item.id_prod) {
+          const prodData: Array<INewProduct> = await store.get(
+            Tables.PRODUCTS_PRINCIPAL,
+            item.id_prod,
+          );
+          const pvData: Array<INewPV> = await store.get(
+            Tables.PUNTOS_VENTA,
+            pvId,
+          );
+          const values = [];
+          values.push(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+          values.push(item.id_prod);
+          values.push(pvId);
+          values.push(devolucion ? item.cant_prod : -item.cant_prod);
+          values.push(1);
+          values.push(devolucion ? 'Devolución' : 'Venta Stock');
+          values.push(prodData[0].precio_compra * item.cant_prod);
+          values.push(item.alicuota_id);
+          values.push(userId);
+          values.push(factId);
+          values.push(prodData[0].name);
+          values.push(`${pvData[0].direccion} (PV: ${pvData[0].pv})`);
+          values.push(prodData[0].category);
+          values.push(prodData[0].subcategory);
+          rowsvalues.push(values);
+        }
         if (key === prodList.length - 1) {
           resolve(rowsvalues);
         }
