@@ -45,6 +45,7 @@ export interface IClientes {
   email: string;
   cond_iva: number;
   user_id: number;
+  direccion: string;
 }
 export interface IMovStock {
   id?: number;

@@ -92,6 +92,7 @@ enum Clientes {
   email = 'email',
   cond_iva = 'cond_iva',
   user_id = 'user_id',
+  direccion = 'direccion',
 }
 
 enum Permissions {

@@ -125,6 +125,8 @@ export = (injectedStore: typeof StoreType) => {
     hasta: string,
     page?: number,
     cantPerPage?: number,
+    hora_desde?: string,
+    hora_hasta?: string,
   ): Promise<any> => {
     let filters: Array<IWhereParams> = [
       {
@@ -146,19 +148,24 @@ export = (injectedStore: typeof StoreType) => {
         },
       ];
     }
-
+    // Quiero una fecha con 3 horas menos
+    const desdeUtc = new Date(desde);
+    desdeUtc.setHours(desdeUtc.getHours() + 3);
+    const hastaUtc = new Date(hasta);
+    hastaUtc.setHours(hastaUtc.getHours() + 3);
+    
     const filter1: IWhereParams = {
       mode: EModeWhere.higherEqual,
       concat: EConcatWhere.none,
-      items: [{ column: Columns.facturas.fecha, object: String(desde) }],
+      items: [{ column: Columns.facturas.create_time, object: moment(desdeUtc).format('YYYY-MM-DD HH:mm:ss') }],
     };
 
     const filter2: IWhereParams = {
       mode: EModeWhere.lessEqual,
       concat: EConcatWhere.none,
-      items: [{ column: Columns.facturas.fecha, object: String(hasta) }],
+      items: [{ column: Columns.facturas.create_time, object: moment(hastaUtc).format('YYYY-MM-DD HH:mm:ss') }],
     };
-
+    
     filters.push(filter1, filter2);
 
     let pages: Ipages;
@@ -593,6 +600,7 @@ export = (injectedStore: typeof StoreType) => {
           email: newFact.email_cliente,
           cond_iva: newFact.cond_iva_cliente,
           user_id: userData.id || 0,
+          direccion: "",
         };
         try {
           await ControllerClientes.upsert(newClient, next);

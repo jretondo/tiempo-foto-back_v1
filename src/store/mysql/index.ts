@@ -217,6 +217,7 @@ const list = (
     join,
     order,
   );
+  
   return new Promise((resolve, reject) => {
     connection.query(query, (err: Error, data: any) => {
       if (err) {

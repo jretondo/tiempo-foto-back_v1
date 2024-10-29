@@ -75,6 +75,7 @@ export = (injectedStore: typeof StoreType) => {
           `${Tables.CLIENTES}.${Columns.clientes.user_id} as user_id`,
           `${Tables.ADMIN}.${Columns.admin.nombre} as vendedor_nombre`,
           `${Tables.ADMIN}.${Columns.admin.apellido} as vendedor_apellido`,
+          `${Tables.CLIENTES}.${Columns.clientes.direccion} as direccion`,
         ],
         filters,
         undefined,
@@ -108,6 +109,7 @@ export = (injectedStore: typeof StoreType) => {
           `${Tables.CLIENTES}.${Columns.clientes.user_id} as user_id`,
           `${Tables.ADMIN}.${Columns.admin.nombre} as vendedor_nombre`,
           `${Tables.ADMIN}.${Columns.admin.apellido} as vendedor_apellido`,
+          `${Tables.CLIENTES}.${Columns.clientes.direccion} as direccion`,
         ],
         filters,
         undefined,
@@ -129,6 +131,7 @@ export = (injectedStore: typeof StoreType) => {
       email: body.email,
       cond_iva: body.cond_iva,
       user_id: body.user_id,
+      direccion: body.direccion,
     };
 
     try {
