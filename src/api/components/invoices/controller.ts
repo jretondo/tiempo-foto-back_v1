@@ -150,9 +150,9 @@ export = (injectedStore: typeof StoreType) => {
     }
     // Quiero una fecha con 3 horas menos
     const desdeUtc = new Date(desde);
-    desdeUtc.setHours(desdeUtc.getHours() + 3);
+    desdeUtc.setHours(desdeUtc.getHours() + 0);
     const hastaUtc = new Date(hasta);
-    hastaUtc.setHours(hastaUtc.getHours() + 3);
+    hastaUtc.setHours(hastaUtc.getHours() + 0);
     
     const filter1: IWhereParams = {
       mode: EModeWhere.higherEqual,
