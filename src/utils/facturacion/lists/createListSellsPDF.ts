@@ -46,7 +46,9 @@ export const createListSellsPDF = async (
     const dataPV = await ControllerPtoVta.get(ptoVtaId);
     const dataUser = await ControllerUsers.getUser(userId);
 
-    const fileName = `${dataPV[0].raz_soc} (${dataPV[0].cuit}) - ${dataUser[0].nombre} ${dataUser[0].apellido} desde ${desde} al ${hasta}.pdf`;
+    const fileName = `${dataPV[0].raz_soc} (${dataPV[0].cuit}) - ${
+      dataUser ? dataUser[0].nombre : 'Todos '
+    } ${dataUser && dataUser[0].apellido} desde ${desde} al ${hasta}.pdf`;
     const location = path.join('public', 'caja-lists', fileName);
 
     const totaleslista: Array<{
