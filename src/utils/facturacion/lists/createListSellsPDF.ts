@@ -47,8 +47,10 @@ export const createListSellsPDF = async (
     const dataUser = await ControllerUsers.getUser(userId);
 
     const fileName = `${dataPV[0].raz_soc} (${dataPV[0].cuit}) - ${
-      dataUser ? dataUser[0].nombre : 'Todos '
-    } ${dataUser && dataUser[0].apellido} desde ${desde} al ${hasta}.pdf`;
+      dataUser.length ? dataUser[0].nombre : 'Todos '
+    } ${
+      dataUser.length && dataUser[0].apellido
+    } desde ${desde} al ${hasta}.pdf`;
     const location = path.join('public', 'caja-lists', fileName);
 
     const totaleslista: Array<{
@@ -161,7 +163,9 @@ export const createListSellsPDF = async (
       logo: 'data:image/png;base64,' + logo,
       style: '<style>' + estilo + '</style>',
       ptoVtaStr: `(P.V.: ${dataPV[0].pv}) ${dataPV[0].direccion}`,
-      usuarioStr: `(Usuario: ${dataUser[0].usuario}) ${dataUser[0].nombre} ${dataUser[0].apellido}`,
+      usuarioStr: `(Usuario: ${dataUser.length && dataUser[0].usuario}) ${
+        dataUser.length && dataUser[0].nombre
+      } ${dataUser.length && dataUser[0].apellido}`,
       desdeStr: desdeStr,
       hastaStr: hastaStr,
       totaleslista: totaleslista,
