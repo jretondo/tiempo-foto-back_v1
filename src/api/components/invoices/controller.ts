@@ -23,6 +23,8 @@ import { NextFunction } from 'express';
 import controller from '../clientes';
 import { sendCode } from '../../../utils/sendEmails/sendCode';
 import moment from 'moment';
+import { staticFolders } from '../../../enums/EStaticFiles';
+import path from 'path';
 
 export = (injectedStore: typeof StoreType) => {
   let store = injectedStore;
@@ -153,19 +155,29 @@ export = (injectedStore: typeof StoreType) => {
     desdeUtc.setHours(desdeUtc.getHours() + 0);
     const hastaUtc = new Date(hasta);
     hastaUtc.setHours(hastaUtc.getHours() + 0);
-    
+
     const filter1: IWhereParams = {
       mode: EModeWhere.higherEqual,
       concat: EConcatWhere.none,
-      items: [{ column: Columns.facturas.create_time, object: moment(desdeUtc).format('YYYY-MM-DD HH:mm:ss') }],
+      items: [
+        {
+          column: Columns.facturas.create_time,
+          object: moment(desdeUtc).format('YYYY-MM-DD HH:mm:ss'),
+        },
+      ],
     };
 
     const filter2: IWhereParams = {
       mode: EModeWhere.lessEqual,
       concat: EConcatWhere.none,
-      items: [{ column: Columns.facturas.create_time, object: moment(hastaUtc).format('YYYY-MM-DD HH:mm:ss') }],
+      items: [
+        {
+          column: Columns.facturas.create_time,
+          object: moment(hastaUtc).format('YYYY-MM-DD HH:mm:ss'),
+        },
+      ],
     };
-    
+
     filters.push(filter1, filter2);
 
     let pages: Ipages;
@@ -600,7 +612,7 @@ export = (injectedStore: typeof StoreType) => {
           email: newFact.email_cliente,
           cond_iva: newFact.cond_iva_cliente,
           user_id: userData.id || 0,
-          direccion: "",
+          direccion: '',
         };
         try {
           await ControllerClientes.upsert(newClient, next);
@@ -864,6 +876,26 @@ export = (injectedStore: typeof StoreType) => {
     }
   };
 
+  const resetTokenAfip = async () => {
+    const tokenFolder = staticFolders.tokenAfip;
+    fs.readdir(tokenFolder, (err, files) => {
+      if (err) {
+        console.log('err :>> ', err);
+      }
+      for (const file of files) {
+        fs.unlink(path.join(tokenFolder, file), (err) => {
+          if (err) {
+            console.log('err :>> ', err);
+          }
+        });
+      }
+    });
+    return {
+      status: 200,
+      msg: 'Token reseteado',
+    };
+  };
+
   return {
     lastInvoice,
     list,
@@ -883,5 +915,6 @@ export = (injectedStore: typeof StoreType) => {
     getDetFact,
     codigoVerificacionDescuento,
     verificaCodigo,
+    resetTokenAfip,
   };
 };

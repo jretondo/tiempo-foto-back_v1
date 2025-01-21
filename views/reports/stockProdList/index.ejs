@@ -1,0 +1,62 @@
+<% function formatoPrecio(precio) { return precio.toLocaleString('es-AR', {
+style: 'currency' , currency: 'ARS' }); } %> <% function formatNumber(number) {
+return number.toLocaleString('es-AR'); } %>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <%- style %>
+
+    <header class="header">
+      <div class="logo">
+        <img src="<%- logo %> " alt="logo" />
+      </div>
+      <div class="summary">LISTADO DE STOCK</div>
+    </header>
+
+    <main class="main">
+      <div class="tasks">
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Proveedor</th>
+              <th>Marca</th>
+              <th>Stock</th>
+              <th>Costo Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% prodList.forEach(function(item){ %>
+            <tr>
+              <td style="text-align: left; padding-left: 10px">
+                <%- item.prod_name %>
+              </td>
+              <td style="text-align: left; padding-left: 10px">
+                <%- item.category %>
+              </td>
+              <td style="text-align: left; padding-left: 10px">
+                <%- item.sub_category %>
+              </td>
+              <td style="text-align: right; padding-right: 10px">
+                <%- formatNumber(item.total) %>
+              </td>
+              <td style="text-align: right; padding-right: 10px">
+                <%- formatoPrecio(item.costoTotal) %>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

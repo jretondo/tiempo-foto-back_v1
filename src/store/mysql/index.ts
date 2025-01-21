@@ -43,7 +43,7 @@ const handleCon = () => {
         handleCon();
       }, 2000);
     } else {
-      console.log('DB Connected');
+      console.log('DB Connected: ', dbConf.database);
       isAttemptingReconnect = false;
     }
   });
@@ -217,7 +217,7 @@ const list = (
     join,
     order,
   );
-  
+
   return new Promise((resolve, reject) => {
     connection.query(query, (err: Error, data: any) => {
       if (err) {

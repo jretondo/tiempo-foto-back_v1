@@ -253,6 +253,14 @@ const cajaListDetails = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
+const resetTokenAfip = (req: Request, res: Response, next: NextFunction) => {
+  Controller.resetTokenAfip()
+    .then((data) => {
+      success({ req, res, message: data });
+    })
+    .catch(next);
+};
+
 router
   .get('/details/:id', secure(EPermissions.ventas), get)
   .get('/cajaList/details/:page', secure(EPermissions.ventas), cajaListDetails)
@@ -302,6 +310,7 @@ router
     newInvoice,
   )
   .delete('/:id', secure(EPermissions.ventas), remove)
-  .put('/paytype/:id', secure(EPermissions.ventas), changePayType);
+  .put('/paytype/:id', secure(EPermissions.ventas), changePayType)
+  .put('/resetTokenAfip', secure(EPermissions.ventas), resetTokenAfip);
 
 export = router;
