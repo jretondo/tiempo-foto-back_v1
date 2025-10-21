@@ -16,3 +16,8 @@ services:
       - '3014:3014'
     env_file:
       - .env
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '400m'
